@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STRIKR — We Play This City</title>
+<meta name="description" content="Find pitches, build your team, and play your city. Strikr is the sports app for finding games and crews near you in Dubai.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF5C1A;
+    --orange-soft: #FF7A45;
+    --obsidian: #0A0A0B;
+    --obsidian-soft: #141416;
+    --obsidian-card: #1A1A1D;
+    --text: #F5F3EF;
+    --text-dim: #8A8A8F;
+    --border: rgba(255,255,255,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--obsidian); color: var(--text); font-family: 'Archivo', sans-serif; overflow-x: hidden; line-height: 1.5; }
+  .display { font-family: 'Anton', sans-serif; font-weight: 400; letter-spacing: 0.02em; text-transform: uppercase; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background: radial-gradient(circle at 80% 10%, rgba(255,92,26,0.12), transparent 40%), radial-gradient(circle at 10% 90%, rgba(255,92,26,0.06), transparent 40%);
+    pointer-events: none; z-index: 0;
+  }
+  .wrap { max-width: 1400px; margin: 0 auto; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 18px 6vw; background: rgba(10,10,11,0.7); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .logo { font-family: 'Anton', sans-serif; font-size: 26px; letter-spacing: 0.12em; color: var(--text); text-transform: uppercase; }
+  .logo span { color: var(--orange); }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-links a.link { color: var(--text-dim); text-decoration: none; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; transition: color 0.2s; }
+  .nav-links a.link:hover { color: var(--text); }
+  .nav-cta { font-family: 'Archivo'; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; background: var(--orange); color: var(--obsidian); padding: 11px 22px; border-radius: 4px; text-decoration: none; transition: transform 0.2s, background 0.2s; }
+  .nav-cta:hover { transform: translateY(-2px); background: var(--orange-soft); }
+  .nav-links a.link { display: none; }
+  @media (min-width: 860px) { .nav-links a.link { display: inline; } }
+
+  /* HERO */
+  .hero { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px 6vw 60px; max-width: 1400px; margin: 0 auto; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 28px; opacity: 0; animation: rise 0.7s 0.1s forwards; }
+  .hero-tag::before { content: ''; width: 28px; height: 2px; background: var(--orange); }
+  .hero h1 { font-family: 'Anton', sans-serif; font-size: clamp(56px, 11vw, 150px); line-height: 0.9; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 28px; }
+  .hero h1 .line { display: block; opacity: 0; animation: rise 0.8s forwards; }
+  .hero h1 .line:nth-child(1) { animation-delay: 0.2s; }
+  .hero h1 .line:nth-child(2) { animation-delay: 0.35s; color: var(--orange); }
+  .hero h1 .line:nth-child(3) { animation-delay: 0.5s; }
+  .hero p.sub { font-size: clamp(17px, 2.2vw, 22px); color: var(--text-dim); max-width: 560px; margin-bottom: 44px; font-weight: 400; opacity: 0; animation: rise 0.8s 0.65s forwards; }
+  .waitlist { display: flex; gap: 12px; max-width: 520px; flex-wrap: wrap; opacity: 0; animation: rise 0.8s 0.8s forwards; }
+  .waitlist input { flex: 1; min-width: 240px; background: var(--obsidian-card); border: 1px solid var(--border); color: var(--text); padding: 17px 20px; border-radius: 6px; font-family: 'Archivo'; font-size: 16px; outline: none; transition: border 0.2s; }
+  .waitlist input::placeholder { color: var(--text-dim); }
+  .waitlist input:focus { border-color: var(--orange); }
+  .waitlist button { background: var(--orange); color: var(--obsidian); border: none; padding: 17px 32px; border-radius: 6px; font-family: 'Archivo'; font-weight: 800; font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: transform 0.2s, background 0.2s; white-space: nowrap; }
+  .waitlist button:hover { transform: translateY(-2px); background: var(--orange-soft); }
+  .form-note { font-size: 13px; color: var(--text-dim); margin-top: 14px; opacity: 0; animation: rise 0.8s 0.9s forwards; }
+  .success-msg { display: none; color: var(--orange); font-weight: 700; font-size: 16px; padding: 17px 0; }
+
+  /* MARQUEE */
+  .marquee-wrap { position: relative; z-index: 1; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--obsidian-soft); overflow: hidden; padding: 22px 0; }
+  .marquee { display: flex; gap: 60px; white-space: nowrap; animation: scroll 22s linear infinite; }
+  .marquee span { font-family: 'Anton'; font-size: 30px; text-transform: uppercase; color: var(--text-dim); letter-spacing: 0.05em; display: flex; align-items: center; gap: 60px; }
+  .marquee span::after { content: '◆'; color: var(--orange); font-size: 16px; }
+
+  /* SECTION SHARED */
+  section.block { position: relative; z-index: 1; padding: 110px 6vw; max-width: 1400px; margin: 0 auto; }
+  .section-label { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 18px; }
+  .section-title { font-family: 'Anton'; font-size: clamp(36px, 6vw, 72px); text-transform: uppercase; line-height: 1; margin-bottom: 28px; }
+  .section-intro { color: var(--text-dim); font-size: 18px; max-width: 600px; margin-bottom: 60px; }
+
+  /* PROBLEM */
+  .problem { background: var(--obsidian-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .pain { padding: 30px; border-left: 2px solid var(--orange); background: var(--obsidian-card); border-radius: 0 10px 10px 0; }
+  .pain h3 { font-size: 19px; font-weight: 700; margin-bottom: 10px; }
+  .pain p { color: var(--text-dim); font-size: 15px; }
+  .problem-statement { font-family: 'Anton'; font-size: clamp(28px, 4.5vw, 52px); line-height: 1.05; text-transform: uppercase; margin-top: 60px; }
+  .problem-statement .o { color: var(--orange); }
+
+  /* HOW */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+  .step { background: var(--obsidian-card); border: 1px solid var(--border); border-radius: 12px; padding: 36px 30px; position: relative; overflow: hidden; transition: transform 0.3s, border 0.3s; }
+  .step:hover { transform: translateY(-6px); border-color: var(--orange); }
+  .step-num { font-family: 'Anton'; font-size: 64px; color: var(--orange); opacity: 0.25; position: absolute; top: 14px; right: 22px; line-height: 1; }
+  .step h3 { font-family: 'Anton'; font-size: 26px; text-transform: uppercase; margin-bottom: 12px; margin-top: 30px; }
+  .step p { color: var(--text-dim); font-size: 16px; }
+
+  /* FEATURES */
+  .features { background: var(--obsidian-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .feat { background: var(--obsidian); padding: 40px 34px; transition: background 0.3s; }
+  .feat:hover { background: var(--obsidian-card); }
+  .feat-icon { width: 36px; height: 4px; background: var(--orange); border-radius: 2px; margin-bottom: 22px; }
+  .feat h3 { font-family: 'Anton'; font-size: 22px; text-transform: uppercase; margin-bottom: 12px; }
+  .feat p { color: var(--text-dim); font-size: 15px; }
+  .feat .tag-soon { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--orange); border: 1px solid var(--orange); padding: 2px 8px; border-radius: 20px; margin-top: 12px; }
+
+  /* AUDIENCE */
+  .aud-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .aud { padding: 32px 28px; border: 1px solid var(--border); border-radius: 12px; transition: transform 0.3s, border 0.3s; }
+  .aud:hover { transform: translateY(-5px); border-color: var(--orange); }
+  .aud .em { width: 32px; height: 4px; background: var(--orange); border-radius: 2px; margin-bottom: 20px; display: block; }
+  .aud h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .aud p { color: var(--text-dim); font-size: 14px; }
+
+  /* OWNERS */
+  .owners { background: var(--obsidian-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .owners-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  @media (max-width: 800px) { .owners-inner { grid-template-columns: 1fr; gap: 40px; } }
+  .owners ul { list-style: none; margin-top: 24px; }
+  .owners li { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 16px; }
+  .owners li .check { color: var(--orange); font-weight: 800; flex-shrink: 0; }
+  .owners-cta { background: var(--obsidian-card); border: 1px solid var(--orange); border-radius: 16px; padding: 44px 36px; text-align: center; }
+  .owners-cta h3 { font-family: 'Anton'; font-size: 30px; text-transform: uppercase; margin-bottom: 12px; }
+  .owners-cta p { color: var(--text-dim); margin-bottom: 26px; }
+  .owners-cta a { display: inline-block; background: var(--orange); color: var(--obsidian); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 15px 30px; border-radius: 6px; text-decoration: none; font-size: 14px; transition: transform 0.2s, background 0.2s; }
+  .owners-cta a:hover { transform: translateY(-2px); background: var(--orange-soft); }
+
+  /* FAQ */
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-q { width: 100%; background: none; border: none; color: var(--text); font-family: 'Archivo'; font-size: 19px; font-weight: 600; text-align: left; padding: 26px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+  .faq-q .plus { color: var(--orange); font-size: 26px; flex-shrink: 0; transition: transform 0.3s; }
+  .faq-q.active .plus { transform: rotate(45deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; color: var(--text-dim); font-size: 16px; }
+  .faq-a.open { max-height: 300px; padding-bottom: 26px; }
+
+  /* FINAL */
+  section.final { position: relative; z-index: 1; text-align: center; padding: 120px 6vw; border-top: 1px solid var(--border); background: radial-gradient(circle at 50% 0%, rgba(255,92,26,0.15), transparent 50%); }
+  section.final h2 { font-family: 'Anton'; font-size: clamp(44px, 8vw, 100px); text-transform: uppercase; line-height: 0.92; margin-bottom: 36px; }
+  section.final h2 .o { color: var(--orange); }
+  .final .waitlist { margin: 0 auto; justify-content: center; }
+
+  /* FOOTER */
+  footer { position: relative; z-index: 1; padding: 50px 6vw; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+  .socials { display: flex; gap: 18px; }
+  .socials a { color: var(--text-dim); text-decoration: none; font-weight: 600; font-size: 15px; text-transform: uppercase; letter-spacing: 0.04em; transition: color 0.2s; }
+  .socials a:hover { color: var(--orange); }
+  footer .copy { color: var(--text-dim); font-size: 14px; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  @media (max-width: 600px) {
+    nav { padding: 14px 6vw; }
+    .nav-cta { padding: 9px 16px; font-size: 12px; }
+    .logo { font-size: 22px; }
+    section.block { padding: 80px 6vw; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">STRI<span>K</span>R</div>
+  <div class="nav-links">
+    <a href="#how" class="link">How it works</a>
+    <a href="#features" class="link">Features</a>
+    <a href="#owners" class="link">Pitch owners</a>
+    <a href="#join" class="nav-cta">Join Waitlist</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">Sports · Dubai · Launching 2026</div>
+  <h1 class="display">
+    <span class="line">We Play</span>
+    <span class="line">This</span>
+    <span class="line">City.</span>
+  </h1>
+  <p class="sub">Find pitches near you. Build your team. Line up matches against rival crews. No team? Jump into one that needs players. Your city is always playing — now you're in.</p>
+  <form class="waitlist" id="waitlist-top" action="https://formspree.io/f/xojzwnpd" method="POST">
+    <input type="text" name="name" placeholder="Your name" required>
+    <input type="email" name="email" placeholder="Enter your email" required>
+    <button type="submit">Get Early Access</button>
+  </form>
+  <div class="success-msg" id="success-top">You're on the list. We'll be in touch.</div>
+  <p class="form-note">Be first to play when we launch in Dubai. No spam, ever.</p>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span>Football</span><span>Cricket</span><span>Basketball</span><span>Padel</span><span>Tennis</span><span>Volleyball</span>
+    <span>Football</span><span>Cricket</span><span>Basketball</span><span>Padel</span><span>Tennis</span><span>Volleyball</span>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section class="block problem">
+  <div class="section-label">The problem</div>
+  <h2 class="section-title">New city.<br>No game.</h2>
+  <p class="section-intro">You move to a new city. You've got the gear, you've got the time, but you don't have anyone to play with. The local groups are already full. Walking up to strangers is awkward. So you stay home — and slowly stop playing altogether.</p>
+  <div class="problem-grid">
+    <div class="pain">
+      <h3>Pitches are scattered</h3>
+      <p>Finding an open slot means calling around, checking five different WhatsApp groups, or just showing up and hoping.</p>
+    </div>
+    <div class="pain">
+      <h3>Teams are closed</h3>
+      <p>Everyone already has their crew. There's no easy way in if you're new, shy, or just don't know anyone yet.</p>
+    </div>
+    <div class="pain">
+      <h3>No way to find rivals</h3>
+      <p>Got a team but no one to play against? There's no app built for team-vs-team matchups. Until now.</p>
+    </div>
+  </div>
+  <p class="problem-statement">Strikr puts the whole city's game <span class="o">in your pocket.</span></p>
+</section>
+
+<!-- HOW -->
+<section class="block" id="how">
+  <div class="section-label">How it works</div>
+  <h2 class="section-title">Three taps<br>to a game.</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Find a Pitch</h3>
+      <p>Open the map, see every pitch near you, check slots and prices in real time. Book the one you want, when you want it.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Build a Team</h3>
+      <p>Create a room, get a join code, pull in your crew. Captains line up matches against other captains right in the app.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Just Show Up</h3>
+      <p>No team? Drop into the free-agent pool and join a crew that's short of players. New in the city? You're in the game.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="block features" id="features">
+  <div class="section-label">What makes us different</div>
+  <h2 class="section-title">Not just booking.<br>Matchmaking.</h2>
+  <p class="section-intro">Other apps just let you book a court. Strikr is built around the part that actually matters — finding people to play with and against.</p>
+  <div class="feat-grid">
+    <div class="feat">
+      <div class="feat-icon"></div>
+      <h3>Real-time pitch booking</h3>
+      <p>Live slots, live prices, first-come-first-served. Book and lock your spot in seconds.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"></div>
+      <h3>Team rooms &amp; join codes</h3>
+      <p>Captains create a room and get a code. Share it, build your squad, keep your crew in one place.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"></div>
+      <h3>Free-agent pool</h3>
+      <p>Solo player? Browse public rooms short of players and jump in. No team required to get a game.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"></div>
+      <h3>Captain-vs-captain</h3>
+      <p>See other captains' public rooms and arrange a real team-vs-team match in-app. This is the wedge.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"></div>
+      <h3>Smart filters</h3>
+      <p>Filter by city, area, timing, sport, pitch and price. Find exactly the game you're looking for.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon"></div>
+      <h3>Community tournaments</h3>
+      <p>Organize and join local tournaments. Bring more teams and more games to your area.</p>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIENCE -->
+<section class="block" id="who">
+  <div class="section-label">Who it's for</div>
+  <h2 class="section-title">Built for<br>everyone who plays.</h2>
+  <div class="aud-grid">
+    <div class="aud">
+      <span class="em"></span>
+      <h3>Newcomers</h3>
+      <p>New to the city — students, expats — who want to find people to play with fast.</p>
+    </div>
+    <div class="aud">
+      <span class="em"></span>
+      <h3>Quiet players</h3>
+      <p>Anyone who finds it hard to walk up to a group and ask to join. Tap a button instead.</p>
+    </div>
+    <div class="aud">
+      <span class="em"></span>
+      <h3>Existing teams</h3>
+      <p>Friend groups and crews who want organized matches against other real teams.</p>
+    </div>
+    <div class="aud">
+      <span class="em"></span>
+      <h3>Pitch owners</h3>
+      <p>Turf and court owners who want to fill empty slots and reach more players.</p>
+    </div>
+  </div>
+</section>
+
+<!-- OWNERS -->
+<section class="block owners" id="owners">
+  <div class="owners-inner">
+    <div>
+      <div class="section-label">For pitch owners</div>
+      <h2 class="section-title">Fill your<br>empty slots.</h2>
+      <p class="section-intro" style="margin-bottom:0;">List your pitch, set your availability and prices, and get discovered by players actively looking for a game near you.</p>
+      <ul>
+        <li><span class="check">✓</span> List your pitch and set your own slots, rules and pricing</li>
+        <li><span class="check">✓</span> Get found by players filtering for your area and sport</li>
+        <li><span class="check">✓</span> Bookings confirmed on payment — no chasing no-shows</li>
+        <li><span class="check">✓</span> Your phone number stays private with masked calling</li>
+      </ul>
+    </div>
+    <div class="owners-cta">
+      <h3>Own a pitch?</h3>
+      <p>Get early access and list your venue free for the first 3 months.</p>
+      <a href="#join">List Your Pitch</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="block" id="faq">
+  <div class="section-label">Questions</div>
+  <h2 class="section-title">Good to know.</h2>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q"><span>When does Strikr launch?</span><span class="plus">+</span></button>
+      <div class="faq-a">We're launching in Dubai first, in 2026. Join the waitlist to be one of the first players in when we go live.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>Which sports are supported?</span><span class="plus">+</span></button>
+      <div class="faq-a">Football, cricket, basketball, padel, tennis, volleyball and more. If there's a pitch for it, you'll find it on Strikr.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>Do I need a team to use it?</span><span class="plus">+</span></button>
+      <div class="faq-a">Nope. If you don't have a team, join the free-agent pool and drop into a public room that needs players. New to the city? This is built for you.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>Is it free to join?</span><span class="plus">+</span></button>
+      <div class="faq-a">Joining and browsing is free. You only pay when you book a pitch — and that goes to the pitch owner. The waitlist is completely free.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q"><span>I own a pitch — can I list it?</span><span class="plus">+</span></button>
+      <div class="faq-a">Yes. Pitch owners get their own dashboard to manage slots, prices and rules. Join the waitlist and we'll reach out to get you set up free for the first 3 months.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="block final" id="join">
+  <h2 class="display">Your city <span class="o">never</span><br>sits out.</h2>
+  <form class="waitlist" id="waitlist-bottom" action="https://formspree.io/f/xojzwnpd" method="POST">
+    <input type="text" name="name" placeholder="Your name" required>
+    <input type="email" name="email" placeholder="Enter your email" required>
+    <button type="submit">Join the Waitlist</button>
+  </form>
+  <div class="success-msg" id="success-bottom" style="text-align:center;">You're on the list. We'll be in touch.</div>
+</section>
+
+<footer>
+  <div class="logo">STRI<span>K</span>R</div>
+  <div class="socials">
+    <a href="https://www.instagram.com/strikrplay" target="_blank">Instagram</a>
+    <a href="https://tiktok.com/@strikr" target="_blank">TikTok</a>
+    <a href="mailto:sport@strikr.live">sport@strikr.live</a>
+  </div>
+  <div class="copy">© 2026 Strikr. Dubai, UAE.</div>
+</footer>
+
+<script>
+  function handleForm(formId, successId) {
+    var form = document.getElementById(formId);
+    if (!form) return;
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var data = new FormData(form);
+      fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } })
+        .then(function(res) { form.style.display = 'none'; document.getElementById(successId).style.display = 'block'; })
+        .catch(function() { form.style.display = 'none'; document.getElementById(successId).style.display = 'block'; });
+    });
+  }
+  handleForm('waitlist-top', 'success-top');
+  handleForm('waitlist-bottom', 'success-bottom');
+
+  document.querySelectorAll('.faq-q').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var ans = btn.nextElementSibling;
+      var isOpen = ans.classList.contains('open');
+      document.querySelectorAll('.faq-a').forEach(function(a) { a.classList.remove('open'); });
+      document.querySelectorAll('.faq-q').forEach(function(q) { q.classList.remove('active'); });
+      if (!isOpen) { ans.classList.add('open'); btn.classList.add('active'); }
+    });
+  });
+</script>
+
+</body>
+</html>
